@@ -263,22 +263,18 @@
                                             <td>{{ $item['price'][0]['late_surcharge'] }}</td>
                                             <td>{{ $item['price'][0]['early_surcharge'] }}</td>
                                             <td class="text-center">
-                                                <a href="http://localhost/headvn/public/khachhang/xemchitiet/1"
-                                                    class="btn btn-warning btn-xs m-r-5" data-toggle="tooltip"
-                                                    data-original-title="Xem"><i class="fa fa-eye font-14"></i></a>
-                                                <a wire:click="update({{ $item['id'] }})"
+                                                <a data-target="#modal-add" data-toggle="modal" data-toggle="tooltip"
                                                     class="btn btn-primary btn-xs m-r-5" data-toggle="tooltip"
-                                                    data-original-title="Sửa"><i class="fa fa-pencil font-14"></i></a>
+                                                    data-original-title="Sửa"
+                                                    wire:click="edit({{ $item['id'] }})"><i
+                                                        class="fa fa-pencil font-14"></i></a>
                                                 <button data-target="#modal-service"
                                                     wire:click="showService({{ $item['id'] }})" data-toggle="modal"
                                                     data-toggle="tooltip" class="btn btn-primary btn-xs m-r-5"
                                                     data-toggle="tooltip" data-original-title="Sửa"><i
                                                         class="fa fa-plus font-14"></i></button>
-                                                {{-- <a data-target="#modal-add" data-toggle="modal" data-toggle="tooltip"
-                                                    class="btn btn-primary btn-xs m-r-5" data-toggle="tooltip"
-                                                    data-original-title="Sửa"
-                                                    wire:click="edit({{ $item['id'] }})"><i
-                                                        class="fa fa-pencil font-14"></i></a> --}}
+                                                <button class="btn btn-danger btn-xs m-r-5" wire:click="removeRoomType({{ $item['id'] }})" data-toggle="tooltip"
+                                                    data-original-title="Xem"><i class="fa fa-trash font-14"></i></button>
 
                                             </td>
                                         </tr>

@@ -382,10 +382,10 @@
                                             <div class="col-10">
                                                 <input type="text" id="cccd" class="form-control"
                                                     wire:model.lazy="customerCmtnd">
-                                            </div>
                                             @error('customerCmtnd')
                                             <span class="error text-danger">{{ $message }}</span>
                                         @enderror
+                                            </div>
                                         </div>
 
                                         <div class="form-group row">
@@ -400,6 +400,9 @@
                                                     <option value="2" {{ $sex = 2 ? 'selected' : '' }}>Nữ
                                                     </option>
                                                 </select>
+                                                @error('customerSex')
+                                                    <span class="error text-danger">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -408,6 +411,9 @@
                                             <div class="col-10">
                                                 <input name="country" type="text" class="form-control"
                                                     wire:model.lazy="customerCountry">
+                                                @error('customerCountry')
+                                                    <span class="error text-danger">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
@@ -418,6 +424,9 @@
                                             <div class="col-10">
                                                 <input name="customer_address" type="text" class="form-control"
                                                     wire:model.lazy="customerAddress">
+                                                @error('customerAddress')
+                                                    <span class="error text-danger">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -430,6 +439,9 @@
                                                 </select> --}}
                                                 <input name="customer_address" type="text" class="form-control"
                                                 wire:model.lazy="customerCity">
+                                                @error('customerCity')
+                                                    <span class="error text-danger">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -444,6 +456,9 @@
                                                 </select> --}}
                                                 <input name="customer_address" type="text" class="form-control"
                                                 wire:model.lazy="customerDistrict">
+                                                @error('customerDistrict')
+                                                    <span class="error text-danger">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -452,6 +467,9 @@
                                             <div class="col-10">
                                                 <input type="date" id="birth_day" class="form-control"
                                                     max='{{ date('Y-m-d') }}' wire:model.lazy="customerBirthDay">
+                                                @error('customerBirthDay')
+                                                    <span class="error text-danger">{{ $message }}</span>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
@@ -674,6 +692,9 @@
                 }
             });
 
+            window.addEventListener('close-modal', event => {
+                $('#modal-customer').modal('hide')
+            });
         })
     </script>
 @endsection

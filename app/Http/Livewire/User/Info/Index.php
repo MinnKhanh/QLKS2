@@ -46,6 +46,7 @@ class Index extends Component
             $customer = new Customer();
         }
         $customer->code = $this->code;
+        $customer->account_id = auth()->user()->id;
         $customer->name = $this->name;
         $customer->address = $this->address;
         $customer->email = $this->email;

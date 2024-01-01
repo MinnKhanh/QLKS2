@@ -22,6 +22,7 @@ class ListRoom extends Component
     public $children;
     public $dates = [];
     public $numberOfRoom = 0;
+    public $roomCount = [];
 
     protected $listeners = ['setfromDate', 'settoDate'];
 
@@ -33,6 +34,10 @@ class ListRoom extends Component
         // $this->listRoom = Room::with(['Img', 'Type', 'Floor', 'Service', 'Convenient'])->whereIn('type_room', $this->listTypeDetail)->get()->toArray();
         $this->listTypeDetail = RoomTypeDetail::with(['Img', 'Room', 'RoomCapacity', 'Service', 'TypeRoom', 'Price', 'Convenient'])->withCount('Room')
             ->get()->toArray();
+
+        $this->roomCount = Room::groupBy('type_room')->select(DB::raw('count(id) as count'), 'type_room')->pluck('count', 'type_room')->toArray();
+        // dd($roomCount);
+
         // dd($this->listTypeDetail);
         // $this->listTypeDetail = array_filter($this->listTypeDetail, fn ($n) => $n['room_count'] > 2);
         // dd($this->listTypeDetail);
@@ -75,8 +80,9 @@ class ListRoom extends Component
         $this->listTypeDetail = RoomTypeDetail::with(['Img', 'Room', 'RoomCapacity', 'TypeRoom', 'Service', 'Price', 'Convenient'])
             ->whereHas('Room', function ($q) {
                 $q->whereDoesntHave('Booking', function ($q) {
-                    $q->whereIn('status', [StatusBookingEnum::PENDING]);
+                    // $q->whereIn('status', [StatusBookingEnum::PENDING, StatusBookingEnum::ACTIVE]);
                     $q->where(function ($query) {
+                        $query->whereIn('status', [StatusBookingEnum::PENDING]);
                         $query->where(function ($qu) {
                             $qu->whereDate('checkin_date', '>=', date('Y-m-d', strtotime($this->fromDateTime)));
                             $qu->whereDate('checkout_date', '<=', date('Y-m-d', strtotime($this->toDateTime)));
@@ -90,6 +96,7 @@ class ListRoom extends Component
                             $qu->whereDate('checkout_date', '>=', date('Y-m-d', strtotime($this->toDateTime)));
                         });
                     });
+                    $q->orWhere('status', StatusBookingEnum::ACTIVE);
                 })->whereHas('Capacity', function ($q) {
                     if ($this->adult)
                         $q->where('number_of_adults', '>=', $this->adult);
@@ -101,6 +108,28 @@ class ListRoom extends Component
         $this->listTypeDetail = array_filter($this->listTypeDetail, function ($a) {
             return $a['room_count'] >= $this->numberOfRoom;
         });
+
+
+        $this->roomCount = Room::groupBy('type_room')->whereDoesntHave('Booking', function ($q) {
+                        // $q->whereIn('status', [StatusBookingEnum::PENDING, StatusBookingEnum::ACTIVE]);
+                        $q->where(function ($query) {
+                            $query->whereIn('status', [StatusBookingEnum::PENDING]);
+                            $query->where(function ($qu) {
+                                $qu->whereDate('checkin_date', '>=', date('Y-m-d', strtotime($this->fromDateTime)));
+                                $qu->whereDate('checkout_date', '<=', date('Y-m-d', strtotime($this->toDateTime)));
+                            });
+                            $query->orWhere(function ($qu) {
+                                $qu->whereDate('checkin_date', '<=', date('Y-m-d', strtotime($this->fromDateTime)));
+                                $qu->whereDate('checkout_date', '>=', date('Y-m-d', strtotime($this->fromDateTime)));
+                            });
+                            $query->orWhere(function ($qu) {
+                                $qu->whereDate('checkin_date', '<=', date('Y-m-d', strtotime($this->toDateTime)));
+                                $qu->whereDate('checkout_date', '>=', date('Y-m-d', strtotime($this->toDateTime)));
+                            });
+                        });
+                        $q->orWhere('status', StatusBookingEnum::ACTIVE);
+                    })
+                    ->select(DB::raw('count(id) as count'), 'type_room')->pluck('count', 'type_room')->toArray();
         // $list = Room::with('Img')->whereDoesntHave('Booking', function ($q) {
         //     $q->whereDate('checkin_date', '>=', date('Y-m-d', strtotime($this->dateIn)));
         //     $q->whereDate('checkout_date', '<=', date('Y-m-d', strtotime($this->dateOut)));

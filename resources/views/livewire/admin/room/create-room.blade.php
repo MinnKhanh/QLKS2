@@ -73,7 +73,7 @@
                 <div class="row">
                     <div class="col-12 d-flex justify-content-between">
                         <div id="category-table_filter" class="dataTables_filter">
-                            <button data-target="#modal-create" data-toggle="modal" type="button"
+                            <button data-target="#modal-create" wire:click="resetData()" data-toggle="modal" type="button"
                                 class="btn btn-outline-primary"><i class="fa fa-plus"></i>Thêm
                                 mới</button>
                         </div>
@@ -118,6 +118,12 @@
                                                     data-toggle="tooltip" data-placement="top"
                                                     wire:click="getProduct({{ $item['id'] }})" title="Thanh toán"><i
                                                         class="fa fa-plus"></i></button>
+                                            </li>
+                                            <li class="list-inline-item icon-trash">
+                                                <button class="btn btn-danger btn-sm rounded-0" type="button"
+                                                    wire:click="removeRoom({{ $item['id'] }})"
+                                                 data-toggle="tooltip"
+                                                    data-original-title="Xem"><i class="fa fa-trash font-14"></i></button>
                                             </li>
                                         </td>
                                     </tr>

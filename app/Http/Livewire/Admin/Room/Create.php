@@ -152,9 +152,7 @@ class Create extends Component
     public function change()
     {
         $this->capacityRoom = null;
-        $listTypedetailExists = RoomTypeDetail::where('type_room_id', $this->typeRoom)->whereHas('Price', function ($q) {
-            $q->where('prices.type_price', $this->typePrice);
-        })->where('id', '!=', $this->idUpdate)
+        $listTypedetailExists = RoomTypeDetail::where('type_room_id', $this->typeRoom)->where('id', '!=', $this->idUpdate)
             ->pluck('room_capacity_id')->toArray();
         $this->listCapacity = RoomCapacity::whereNotIn('id', $listTypedetailExists)->select(DB::raw('room_capacity.*'))->get()->toArray();
         // dd('dddd', $this->listCapacity);
@@ -232,28 +230,34 @@ class Create extends Component
         $this->earlyChargeHourNew = null;
         $this->priceNightNew = null;
         $this->lateChargeNightNew = null;
+        $this->photos = null;
         $this->earlyChargeNightNew = null;
         $this->idEdit = 0;
     }
-    // public function edit($idEdit)
-    // {
-    //     // dd($idEdit);
-    //     $this->idEdit = $idEdit;
-    //     $typeRoomDetail = RoomTypeDetail::with(['Price' => function ($q) {
-    //         $q->pluck('price', 'type_price');
-    //     }])->where('id', $this->idEdit)->first();
-    //     dd($typeRoomDetail);
-    //     $this->priceDayNew = null;
-    //     $this->lateChargeDayNew = null;
-    //     $this->earlyChargeDayNew = null;
-    //     $this->priceHourNew = null;
-    //     $this->lateChargeHourNew = null;
-    //     $this->earlyChargeHourNew = null;
-    //     $this->priceNightNew = null;
-    //     $this->lateChargeNightNew = null;
-    //     $this->earlyChargeNightNew = null;
-    //     $this->idEdit = 0;
-    // }
+    public function edit($idEdit)
+    {
+        // dd($idEdit);
+        $this->idEdit = $idEdit;
+        $typeRoomDetail = RoomTypeDetail::with(['Price' => function ($q) {
+            $q->pluck('price', 'type_price');
+        }])->where('id', $this->idEdit)->first();
+        $this->typeRoom = $typeRoomDetail->type_room_id;
+        $listTypedetailExists = RoomTypeDetail::where('type_room_id', $this->typeRoom)->where('id', '<>', $typeRoomDetail->id)->pluck('room_capacity_id')->toArray();
+        $this->listCapacity = RoomCapacity::whereNotIn('id', $listTypedetailExists)->select(DB::raw('room_capacity.*'))->get()->toArray();
+        $this->capacityRoom = $typeRoomDetail->room_capacity_id;
+        $dayPrice = Price::where('type_room_detail_id', $typeRoomDetail->id)->where('type_price', TypePriceEnum::DAY)->first();
+        $hourPrice = Price::where('type_room_detail_id', $typeRoomDetail->id)->where('type_price', TypePriceEnum::HOUR)->first();
+        $nightPrice = Price::where('type_room_detail_id', $typeRoomDetail->id)->where('type_price', TypePriceEnum::NIGHT)->first();
+        $this->priceDayNew = $dayPrice->price;
+        $this->lateChargeDayNew = $dayPrice->late_surcharge;
+        $this->earlyChargeDayNew = $dayPrice->early_surcharge;
+        $this->priceHourNew = $hourPrice->price;
+        $this->lateChargeHourNew = $hourPrice->late_surcharge;
+        $this->earlyChargeHourNew = $hourPrice->early_surcharge;
+        $this->priceNightNew = $nightPrice->price;
+        $this->lateChargeNightNew = $nightPrice->late_surcharge;
+        $this->earlyChargeNightNew = $nightPrice->early_surcharge;
+    }
     public function create()
     {
         $this->validate([
@@ -323,6 +327,9 @@ class Create extends Component
                 Price::insert($listPrice);
             }
             if ($this->photos) {
+                if ($this->idEdit) {
+                    Image::where('object_id', $this->idEdit)->where('type', TypeImgEnum::ROOM_TYPE_IMG)->delete();
+                }
                 foreach ($this->photos as $photo) {
                     $logo = $photo->store('public/room/');
                     $logo = str_replace("public/room/", "", $logo);
@@ -335,7 +342,7 @@ class Create extends Component
             }
             DB::commit();
             $this->idUpdate = 0;
-            $this->listData = RoomTypeDetail::with(['RoomCapacity', 'TypeRoom', 'Price' => function ($q) {
+            $this->listData = RoomTypeDetail::with(['Img','RoomCapacity', 'TypeRoom', 'Price' => function ($q) {
                 $q->where('prices.type_price', $this->typePrice);
             }])->whereHas('Price', function ($q) {
                 return $q->where('prices.type_price', $this->typePrice);
@@ -433,5 +440,15 @@ class Create extends Component
         $this->isAdd = 1;
         $this->photoEdit = $dataUpdate['img'] ? $dataUpdate['img'][0]['path'] : '';
         $this->getData();
+    }
+
+    public function removeRoomType($id){
+        RoomTypeDetail::destroy($id);
+        $this->listData = RoomTypeDetail::with(['Img', 'RoomCapacity', 'TypeRoom', 'Price' => function ($q) {
+            $q->where('prices.type_price', $this->typePrice);
+        }])->whereHas('Price', function ($q) {
+            return $q->where('prices.type_price', $this->typePrice);
+        })->get()->toArray();
+        $this->dispatchBrowserEvent('show-toast', ['type' => 'success', 'message' =>  'Xóa thành công']);
     }
 }

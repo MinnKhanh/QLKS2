@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\Room;
 
 use App\Enums\StatusRoomEnum;
 use App\Enums\TypeImgEnum;
+use App\Models\Booking;
 use App\Models\Floor;
 use App\Models\Image;
 use App\Models\Product;
@@ -175,8 +176,8 @@ class CreateRoom extends Component
     {
         $this->isEdit = 1;
         $this->itemEdit = Room::with(['Img'])->where('id', $id)->first()->toArray();
-        $this->name = $this->itemEdit['name'];
-        $this->type = $this->itemEdit['type_room'];
+        // $this->name = $this->itemEdit['name'];
+        // $this->type = $this->itemEdit['type_room'];
         $this->code = $this->itemEdit['code'];
         $this->description = $this->itemEdit['description'];
         $this->floor = $this->itemEdit['floor_id'];
@@ -196,6 +197,15 @@ class CreateRoom extends Component
             $this->dispatchBrowserEvent('show-toast', ['type' => 'error', 'message' => 'Không thể xóa']);
             DB::rollBack();
             return;
+        }
+    }
+
+    public function removeRoom($id){
+        $roomActive = Booking::where('room_id', $id)->exists();
+        if($roomActive) {
+            $this->dispatchBrowserEvent('show-toast', ['type' => 'error', 'message' => 'Không thể xóa']);
+        } else {
+            Room::destroy($id);
         }
     }
 }

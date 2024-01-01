@@ -59,8 +59,9 @@ class CreateInfo extends Component
     public $deposit = 0;
     public $dates = [];
     public $typeBooking;
+    public $isShowModal = 0;
 
-    protected $listeners = ['setfromDate', 'settoDate', 'setfromDateTime' => 'setfromDateTime', 'settoDateTime' => 'settoDateTime', 'updatePrice', 'updateTypeTime'];
+    protected $listeners = ['setfromDate', 'settoDate', 'setfromDateTime' => 'setfromDateTime', 'settoDateTime' => 'settoDateTime', 'updatePrice', 'updateTypeTime', 'createCustomer'];
     public function mount()
     {
         $this->room = Room::with(['Floor','Type'])->where('id', $this->idRoom)->first()->toArray();
@@ -209,9 +210,12 @@ class CreateInfo extends Component
             $this->dispatchBrowserEvent('show-toast', ['type' => 'success', 'message' => "Tạo thành công"]);
             $this->listCustomer = Customer::get();
             $this->resetDataCustomer();
+            $this->addCustomer($customer->id);
+            $this->dispatchBrowserEvent('close-modal',[]);
             return;
         } catch (Throwable $e) {
             DB::rollBack();
+            $this->isShowModal = 0;
             $this->dispatchBrowserEvent('show-toast', ['type' => 'error', 'message' => "Tạo thất bại"]);
             return;
         }

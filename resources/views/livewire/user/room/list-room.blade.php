@@ -228,7 +228,7 @@
                                     <p>{{ $item['room_capacity']['max_capacity'] }} khách</p>
                                 </div>
                                 <div class="col-4 pd-0 d-flex">
-                                    <p>(1 phòng trống)</p>
+                                    <p>({{$roomCount[$item['id']] ?? 0}} phòng trống)</p>
                                 </div>
                             </div>
                             <div class="d-flex content">
