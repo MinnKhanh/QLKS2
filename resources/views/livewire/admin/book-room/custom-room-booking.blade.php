@@ -211,7 +211,7 @@
                     <label for="customer_name" class="col-3 col-form-label pd-0">Thời gian thuê</label>
                     <div class="col-7">
                         <input name="customer_name" wire:model="rentalTime"
-                            {{ $typeTime == TypeTimeEnum::NIGHT ? 'disabled' : '' }} wire:change="changeRentalTime"
+                            {{ $typeTime == TypeTimeEnum::NIGHT ||  $typeTime == TypeTimeEnum::HOUR ? 'disabled' : '' }} wire:change="changeRentalTime"
                             type="text" class="form-control">
                         @error('customer')
                             <span class="error text-danger">{{ $message }}</span>

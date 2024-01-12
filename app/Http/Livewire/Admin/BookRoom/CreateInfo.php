@@ -264,7 +264,11 @@ class CreateInfo extends Component
                 }
                 $booking->checkin_date = $this->fromDateTime;
                 $booking->checkout_date = $this->toDateTime;
-                $booking->rental_time =  $this->rentalTime;
+                if($this->typeTime == TypeTimeEnum::HOUR) {
+                    $booking->rental_time =  0;
+                }else {
+                    $booking->rental_time =  $this->rentalTime;
+                }
                 $booking->hour_in = $this->hourIn;
                 $booking->type_time = $this->typeTime;
                 $booking->number_of_adults = $this->numberOfAdults;

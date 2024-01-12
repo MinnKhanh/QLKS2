@@ -22,6 +22,7 @@ class BookingController extends Controller
         return view('user.print_payment',['idCustomer'=>$request->idcustomer,'idBooking'=>$request->idbooking]);
     }
     public function infoBooking(Request $request){
-        return view('user.booking.info-booking',['idCustomer'=>$request->idcustomer,'idBooking'=>$request->idbooking]);
+        return view('user.booking.info-booking',['idCustomer'=>$request->idcustomer,'idBooking'=>$request->idbooking
+        , 'success'=> $request->vnp_ResponseCode == '00']);
     }
 }

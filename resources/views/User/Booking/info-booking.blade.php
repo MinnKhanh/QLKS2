@@ -3,5 +3,5 @@
     <link href="{{ asset('assets/css/table-common.css') }}" rel="stylesheet" />
 @endsection
 @section('content')
-    @livewire('user.booking.info-booking', ['idCustomer' => $idCustomer, 'idBooking' => $idBooking])
+    @livewire('user.booking.info-booking', ['idCustomer' => $idCustomer, 'idBooking' => $idBooking,'success'=> $success])
 @endsection

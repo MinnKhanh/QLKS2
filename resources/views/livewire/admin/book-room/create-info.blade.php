@@ -166,6 +166,7 @@
                             </div>
                         </div>
                     @endif
+                    @if ($typeTime != TypeTimeEnum::HOUR)
                     <div class="col-lg-3 row align-items-center mb-5">
                         <label for="searchStatus" class="col-7 col-form-label text-right">Thời gian thuê phòng
                             (Đêm/Giờ)</label>
@@ -177,7 +178,7 @@
                             @enderror
                         </div>
                     </div>
-
+                    @endif
                     <div class="col-lg-3 row align-items-center mb-5">
                         <label class="col-2 col-form-label text-right ">Giờ vào</label>
                         <div class="col-6 row mr-1">
@@ -194,7 +195,7 @@
                 </div>
                 <div class="row">
                     <div class="col-lg-4 row align-items-center mb-5">
-                        <label for="searchStatus" class="col-3 col-form-label text-right">Số người lớn</label>
+                        <label for="searchStatus" class="col-3 col-form-label text-right">Số người lớn <br>(tối đa: {{$room['type']['room_capacity']['number_of_adults']}} người)</label>
                         <div class="col-9">
                             <input wire:model.lazy="numberOfAdults" wire:change="changeNumberPeople" type="number" class="form-control">
                             @error('numberOfAdults')
@@ -203,7 +204,7 @@
                         </div>
                     </div>
                     <div class="col-lg-4 row align-items-center mb-5">
-                        <label for="searchStatus" class="col-3 col-form-label text-right">Số trẻ em</label>
+                        <label for="searchStatus" class="col-3 col-form-label text-right">Số trẻ em <br>(tối đa: {{$room['type']['room_capacity']['number_of_children']}} người)</label>
                         <div class="col-9">
                             <input wire:model.lazy="numberOfChildren" wire:change="changeNumberPeople" type="number" class="form-control">
                             @error('numberOfChildren')

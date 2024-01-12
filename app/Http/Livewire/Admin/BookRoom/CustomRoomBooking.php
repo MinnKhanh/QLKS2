@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use PDO;
 use Throwable;
 
 class CustomRoomBooking extends Component
@@ -159,7 +160,6 @@ class CustomRoomBooking extends Component
             return redirect()->route('admin.bookroom.list_room');
         } catch (Throwable $e) {
             DB::rollBack();
-            dd($e);
             $this->dispatchBrowserEvent('show-toast', ['type' => 'error', 'message' => $e]);
         }
     }
@@ -210,15 +210,27 @@ class CustomRoomBooking extends Component
         try {
             $this->bookingInfo->checkin_date = $this->checkInDateTime;
             $this->bookingInfo->checkout_date = $this->checkOutDateTime;
-            $this->bookingInfo->rental_time = $this->rentalTime;
             $this->bookingInfo->type_time = $this->typeTime;
             $this->bookingInfo->deposit = $this->deposit;
             $this->bookingInfo->hour_in = $this->hourIn;
             $this->bookingInfo->hour_out = $this->hourOut;
+            if ($this->typeTime != TypeTimeEnum::HOUR) {
+                $this->bookingInfo->rental_time = $this->rentalTime;
+            } else {
+                if($this->hourIn && $this->hourOut) {
+                    $start = Carbon::parse($this->hourIn);
+                    $end = Carbon::parse($this->hourOut);$start->diffInHours($end);
+                    if($start > $end){
+                        $start = $end;
+                        $this->hourOut = $this->hourIn;
+                    }
+                    $this->rentalTime = $start->diffInHours($end);
+                    $this->bookingInfo->rental_time = $this->rentalTime;
+                }
+            }
             $this->bookingInfo->save();
             $this->dispatchBrowserEvent('show-toast', ['type' => 'success', 'message' => 'Cập nhật thành công']);
         } catch (Throwable $e) {
-            dd($e);
             $this->dispatchBrowserEvent('show-toast', ['type' => 'error', 'message' => 'Cập nhật thất bại']);
         }
     }
@@ -520,6 +532,11 @@ class CustomRoomBooking extends Component
             $this->bookingInfo->late_checkin_fee = $this->priceLateChager;
             $this->bookingInfo->early_checkIn_fee = $this->priceEarlyChager;
             $this->bookingInfo->price_service = $this->totalPriceService;
+            if($this->typeTime == TypeTimeEnum::HOUR){
+                $start = Carbon::parse($this->hourIn);
+                $end = Carbon::parse($this->hourOut);
+                $this->bookingInfo->rental_time = $start->diffInHours($end);
+            }
             $this->bookingInfo->total_price = $this->totalPrice;
             $this->bookingInfo->price = $this->price;
             $this->bookingInfo->save();
