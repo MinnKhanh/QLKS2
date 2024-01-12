@@ -6,6 +6,7 @@ use App\Enums\StatusRoomEnum;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Room;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class InfoBooking extends Component
@@ -20,7 +21,6 @@ class InfoBooking extends Component
     public function mount(){
         // dd($this->success);
         if(!$this->success){
-            dd(1);
             Booking::whereIn('id',$this->idBooking)->delete();
              $this->isSucces = false;
         }
@@ -29,7 +29,7 @@ class InfoBooking extends Component
     }
     public function render()
     {
-        if(!$this->isSucces){
+        if(!$this->isSucces || !Auth::check()){
             redirect()->route('room.index');
         }
         return view('livewire.user.booking.info-booking');
