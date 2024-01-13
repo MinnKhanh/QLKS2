@@ -29,9 +29,9 @@ class InfoBooking extends Component
     }
     public function render()
     {
-        if(!$this->isSucces || !Auth::check()){
-            redirect()->route('room.index');
-        }
+        // if(!$this->isSucces || !Auth::check()){
+        //     return redirect()->route('room.index');
+        // }
         return view('livewire.user.booking.info-booking');
     }
 }
