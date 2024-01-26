@@ -397,13 +397,6 @@ class CustomRoomBooking extends Component
 
     public function changeTypeTime()
     {
-        if ($this->typeTime == TypeTimeEnum::NIGHT) {
-            $this->rentalTime = 1;
-        }
-        if ($this->typeTime == TypeTimeEnum::HOUR) {
-            $checkOutDateTime = Carbon::parse(date('Y-m-d ' . $this->hourIn, strtotime($this->checkInDateTime)))->addHour($this->rentalTime);
-            $this->checkOutDateTime = $checkOutDateTime->format('Y-m-d');
-        }
 
 
 
