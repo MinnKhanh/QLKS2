@@ -404,6 +404,11 @@ class CustomRoomBooking extends Component
             $checkOutDateTime = Carbon::parse(date('Y-m-d ' . $this->hourIn, strtotime($this->checkInDateTime)))->addHour($this->rentalTime);
             $this->checkOutDateTime = $checkOutDateTime->format('Y-m-d');
         }
+
+
+
+
+
     }
 
     public function countPrice()
